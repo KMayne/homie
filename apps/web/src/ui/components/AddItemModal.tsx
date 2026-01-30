@@ -65,7 +65,7 @@ export function AddItemModal({ onSave, onClose }: AddItemModalProps) {
     const newItem: NewItem = {
       name: form.name.trim(),
       quantity: parseInt(form.quantity, 10),
-      notes: form.notes.trim() || undefined,
+      notes: form.notes.trim() || null,
       locationPath: parseLocationPath(form.locationPath),
       attributes: form.attributes.filter((attr) => attr.key.trim()),
     };

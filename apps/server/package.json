@@ -1,0 +1,32 @@
+{
+  "name": "@inventory/server",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "tsx src/index.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@automerge/automerge-repo": "^2.0.13",
+    "@automerge/automerge-repo-network-websocket": "^2.0.13",
+    "@automerge/automerge-repo-storage-nodefs": "^2.0.13",
+    "@hono/node-server": "^1.14.3",
+    "@inventory/shared": "workspace:*",
+    "@simplewebauthn/server": "^11.0.0",
+    "@simplewebauthn/types": "^11.0.0",
+    "cookie": "^1.0.3",
+    "hono": "^4.7.10",
+    "ws": "^8.18.1",
+    "tsx": "^4.19.4",
+    "zod": "^3.25.23"
+  },
+  "devDependencies": {
+    "@types/cookie": "^1.0.0",
+    "@types/node": "^24.10.1",
+    "@types/ws": "^8.18.1",
+    "typescript": "~5.9.3"
+  }
+}
