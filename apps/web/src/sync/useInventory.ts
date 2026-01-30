@@ -1,6 +1,5 @@
 import { useMemo, useCallback } from "react";
 import { useDocument } from "@automerge/react";
-import type { DocumentId } from "@automerge/automerge-repo";
 import type {
   InventoryDoc,
   InventoryItem,

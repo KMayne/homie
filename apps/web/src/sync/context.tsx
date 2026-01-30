@@ -21,14 +21,10 @@ interface SyncProviderProps {
 }
 
 export function SyncProvider({ children }: SyncProviderProps) {
-  const { inventories } = useAuth();
+  const { currentInventoryId } = useAuth();
   const repo = useMemo(() => getRepo(), []);
 
-  // Get the first inventory (primary one)
-  const inventoryId = useMemo(() => {
-    if (inventories.length === 0) return null;
-    return inventories[0].id as DocumentId;
-  }, [inventories]);
+  const inventoryId = currentInventoryId as DocumentId | null;
 
   return (
     <RepoContext.Provider value={repo}>

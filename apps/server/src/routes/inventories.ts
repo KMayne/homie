@@ -10,6 +10,7 @@ import {
 } from "../store/index.ts";
 import { getRepo } from "../repo.ts";
 import type { InventoryDoc } from "@inventory/shared";
+import type { DocumentId } from "@automerge/automerge-repo";
 
 const inventories: IRouter = Router();
 
@@ -20,13 +21,21 @@ inventories.use(requireAuth);
 inventories.get("/", async (req: Request, res: Response) => {
   const user = req.user!;
   const userInventories = await getInventoriesForUser(user.id);
+  const repo = getRepo();
 
-  res.json({
-    inventories: userInventories.map((a) => ({
-      id: a.inventoryId,
-      isOwner: a.ownerId === user.id,
-    })),
-  });
+  const inventoriesWithNames = await Promise.all(
+    userInventories.map(async (a) => {
+      const handle = await repo.find<InventoryDoc>(a.inventoryId as DocumentId);
+      const doc = handle.docSync();
+      return {
+        id: a.inventoryId,
+        name: doc?.name ?? "Inventory",
+        isOwner: a.ownerId === user.id,
+      };
+    })
+  );
+
+  res.json({ inventories: inventoriesWithNames });
 });
 
 // POST /api/inventories
@@ -47,6 +56,7 @@ inventories.post("/", async (req: Request, res: Response) => {
   res.json({
     inventory: {
       id: handle.documentId,
+      name: inventoryName,
       isOwner: true,
     },
   });

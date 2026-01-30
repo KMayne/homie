@@ -19,6 +19,7 @@ import {
 interface AuthState {
   user: UserInfo | null;
   inventories: InventoryInfo[];
+  currentInventoryId: string | null;
   isLoading: boolean;
 }
 
@@ -26,6 +27,10 @@ interface AuthContextValue extends AuthState {
   register: (name: string) => Promise<void>;
   login: () => Promise<void>;
   logout: () => Promise<void>;
+  setCurrentInventoryId: (id: string) => void;
+  setInventories: (inventories: InventoryInfo[]) => void;
+  addInventory: (inventory: InventoryInfo) => void;
+  removeInventory: (id: string) => void;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -38,6 +43,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [state, setState] = useState<AuthState>({
     user: null,
     inventories: [],
+    currentInventoryId: null,
     isLoading: true,
   });
 
@@ -46,14 +52,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
     authApi
       .me()
       .then((data) => {
+        const inventories = data.inventories ?? [];
         setState({
           user: data.user,
-          inventories: data.inventories ?? [],
+          inventories,
+          currentInventoryId: inventories[0]?.id ?? null,
           isLoading: false,
         });
       })
       .catch(() => {
-        setState({ user: null, inventories: [], isLoading: false });
+        setState({ user: null, inventories: [], currentInventoryId: null, isLoading: false });
       });
   }, []);
 
@@ -67,9 +75,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
     // Finish registration on server
     const result = await authApi.registerFinish(tempId, name, credential);
 
+    const inventories = [{ id: result.inventoryId, name: "Inventory", isOwner: true }];
     setState({
       user: result.user,
-      inventories: [{ id: result.inventoryId, isOwner: true }],
+      inventories,
+      currentInventoryId: result.inventoryId,
       isLoading: false,
     });
   }, []);
@@ -87,17 +97,66 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setState({
       user: result.user,
       inventories: result.inventories,
+      currentInventoryId: result.inventories[0]?.id ?? null,
       isLoading: false,
     });
   }, []);
 
   const logout = useCallback(async () => {
     await authApi.logout();
-    setState({ user: null, inventories: [], isLoading: false });
+    setState({ user: null, inventories: [], currentInventoryId: null, isLoading: false });
+  }, []);
+
+  const setCurrentInventoryId = useCallback((id: string) => {
+    setState((prev) => ({ ...prev, currentInventoryId: id }));
+  }, []);
+
+  const setInventories = useCallback((inventories: InventoryInfo[]) => {
+    setState((prev) => ({
+      ...prev,
+      inventories,
+      // If current inventory was removed, switch to first one
+      currentInventoryId: inventories.find((i) => i.id === prev.currentInventoryId)
+        ? prev.currentInventoryId
+        : inventories[0]?.id ?? null,
+    }));
+  }, []);
+
+  const addInventory = useCallback((inventory: InventoryInfo) => {
+    setState((prev) => ({
+      ...prev,
+      inventories: [...prev.inventories, inventory],
+      currentInventoryId: inventory.id,
+    }));
+  }, []);
+
+  const removeInventory = useCallback((id: string) => {
+    setState((prev) => {
+      const inventories = prev.inventories.filter((i) => i.id !== id);
+      return {
+        ...prev,
+        inventories,
+        currentInventoryId:
+          prev.currentInventoryId === id
+            ? inventories[0]?.id ?? null
+            : prev.currentInventoryId,
+      };
+    });
   }, []);
 
   return (
-    <AuthContext.Provider value={{ ...state, register, login, logout }}>
+    <AuthContext.Provider
+      value={{
+        ...state,
+        register,
+        login,
+        logout,
+        setCurrentInventoryId,
+        setInventories,
+        addInventory,
+        removeInventory,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

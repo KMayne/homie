@@ -48,13 +48,33 @@ body {
 }
 
 .app-header {
-  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
 }
 
 .app-header h1 {
   margin: 0;
   font-size: 1.5rem;
   font-weight: 600;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.user-name {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
 }
 
 /* Toolbar */
@@ -573,21 +593,6 @@ button {
   color: var(--color-text-muted);
 }
 
-/* User header */
-.user-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.user-info {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.875rem;
-  color: var(--color-text-muted);
-}
-
 .btn-logout {
   padding: 0.375rem 0.75rem;
   font-size: 0.8125rem;
@@ -670,6 +675,159 @@ button {
 
 .btn-confirm-danger:hover {
   background: #b91c1c;
+}
+
+/* Inventory Bar */
+.inventory-bar {
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* Inventory Selector */
+.inventory-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.inventory-current {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.inventory-select {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9375rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-bg);
+  color: var(--color-text);
+  min-width: 200px;
+}
+
+.inventory-select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.btn-inventory-settings {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  color: var(--color-text);
+}
+
+.btn-inventory-settings:hover:not(:disabled) {
+  background: var(--color-surface-hover);
+}
+
+.btn-inventory-settings:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.modal-small {
+  max-width: 360px;
+}
+
+.modal-form {
+  padding: 1rem;
+}
+
+/* Inventory Settings Modal */
+.inventory-settings-content {
+  padding: 1rem;
+}
+
+.settings-section {
+  margin-bottom: 1.5rem;
+}
+
+.settings-section:last-child {
+  margin-bottom: 0;
+}
+
+.settings-section h3 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.125rem;
+}
+
+.settings-section h4 {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.9375rem;
+}
+
+.settings-meta {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
+
+.settings-id {
+  margin: 0.5rem 0 0 0;
+  font-size: 0.75rem;
+  font-family: monospace;
+  color: var(--color-text-muted);
+  word-break: break-all;
+}
+
+.settings-help {
+  margin: 0 0 0.75rem 0;
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
+
+.settings-danger-zone {
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.share-form {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.share-input {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+.share-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.btn-share {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  background: var(--color-primary);
+  border: none;
+  border-radius: var(--radius);
+  color: white;
+}
+
+.btn-share:hover {
+  background: var(--color-primary-hover);
+}
+
+.form-success {
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid #22c55e;
+  border-radius: var(--radius);
+  color: #22c55e;
+  font-size: 0.875rem;
 }
 
 /* Delete Button */

@@ -1,3 +1,8 @@
+import type {
+  PublicKeyCredentialCreationOptionsJSON,
+  PublicKeyCredentialRequestOptionsJSON,
+} from "@simplewebauthn/types";
+
 const API_BASE = import.meta.env.VITE_API_URL ?? "";
 
 interface ApiOptions {
@@ -28,6 +33,7 @@ export interface UserInfo {
 
 export interface InventoryInfo {
   id: string;
+  name: string;
   isOwner: boolean;
 }
 
@@ -37,7 +43,7 @@ export interface MeResponse {
 }
 
 export interface RegisterStartResponse {
-  options: PublicKeyCredentialCreationOptions;
+  options: PublicKeyCredentialCreationOptionsJSON;
   tempId: string;
 }
 
@@ -47,7 +53,7 @@ export interface RegisterFinishResponse {
 }
 
 export interface LoginStartResponse {
-  options: PublicKeyCredentialRequestOptions;
+  options: PublicKeyCredentialRequestOptionsJSON;
   tempId: string;
 }
 

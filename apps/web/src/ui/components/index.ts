@@ -5,3 +5,6 @@ export { ItemDetails } from "./ItemDetails";
 export { AddItemModal } from "./AddItemModal";
 export { EditItemModal } from "./EditItemModal";
 export { AttributeEditor } from "./AttributeEditor";
+export { InventorySelector } from "./InventorySelector";
+export { InventorySettingsModal } from "./InventorySettingsModal";
+export { CreateInventoryModal } from "./CreateInventoryModal";

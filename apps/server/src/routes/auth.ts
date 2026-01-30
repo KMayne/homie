@@ -29,6 +29,7 @@ import {
 } from "../app.ts";
 import { getRepo } from "../repo.ts";
 import type { InventoryDoc } from "@inventory/shared";
+import type { DocumentId } from "@automerge/automerge-repo";
 
 const auth: IRouter = Router();
 
@@ -201,14 +202,24 @@ auth.post("/login/finish", async (req: Request, res: Response) => {
     const session = await createSession(user.id);
     setSessionCookie(res, session);
 
-    const inventories = await getInventoriesForUser(user.id);
+    const userInventories = await getInventoriesForUser(user.id);
+    const repo = getRepo();
+
+    const inventoriesWithNames = await Promise.all(
+      userInventories.map(async (a) => {
+        const handle = await repo.find<InventoryDoc>(a.inventoryId as DocumentId);
+        const doc = handle.docSync();
+        return {
+          id: a.inventoryId,
+          name: doc?.name ?? "Inventory",
+          isOwner: a.ownerId === user.id,
+        };
+      })
+    );
 
     res.json({
       user: { id: user.id, name: user.name },
-      inventories: inventories.map((a) => ({
-        id: a.inventoryId,
-        isOwner: a.ownerId === user.id,
-      })),
+      inventories: inventoriesWithNames,
     });
   } catch (err) {
     console.error("Login error:", err);
@@ -240,14 +251,24 @@ auth.get("/me", async (req: Request, res: Response) => {
 
   setSessionCookie(res, session);
 
-  const inventories = await getInventoriesForUser(user.id);
+  const userInventories = await getInventoriesForUser(user.id);
+  const repo = getRepo();
+
+  const inventoriesWithNames = await Promise.all(
+    userInventories.map(async (a) => {
+      const handle = await repo.find<InventoryDoc>(a.inventoryId as DocumentId);
+      const doc = handle.docSync();
+      return {
+        id: a.inventoryId,
+        name: doc?.name ?? "Inventory",
+        isOwner: a.ownerId === user.id,
+      };
+    })
+  );
 
   res.json({
     user: { id: user.id, name: user.name },
-    inventories: inventories.map((a) => ({
-      id: a.inventoryId,
-      isOwner: a.ownerId === user.id,
-    })),
+    inventories: inventoriesWithNames,
   });
 });
 
