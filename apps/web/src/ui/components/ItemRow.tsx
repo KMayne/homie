@@ -4,6 +4,8 @@ import { ItemDetails } from "./ItemDetails";
 
 interface ItemRowProps {
   item: Item;
+  onEdit: (item: Item) => void;
+  onDelete: (id: string) => void;
 }
 
 function formatLocationPath(path: string[]): string {
@@ -13,7 +15,7 @@ function formatLocationPath(path: string[]): string {
   return path.join(" / ");
 }
 
-export function ItemRow({ item }: ItemRowProps) {
+export function ItemRow({ item, onEdit, onDelete }: ItemRowProps) {
   const [expanded, setExpanded] = useState(false);
 
   return (
@@ -36,7 +38,13 @@ export function ItemRow({ item }: ItemRowProps) {
         <span className="item-location">{formatLocationPath(item.locationPath)}</span>
       </div>
 
-      {expanded && <ItemDetails item={item} />}
+      {expanded && (
+        <ItemDetails
+          item={item}
+          onEdit={() => onEdit(item)}
+          onDelete={() => onDelete(item.id)}
+        />
+      )}
     </div>
   );
 }

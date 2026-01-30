@@ -1,15 +1,17 @@
 import { useState } from "react";
 import { useAuth } from "../auth";
 import { useSearchItems, useItemMutations } from "../store";
-import { SearchBar, ItemList, AddItemModal } from "./components";
+import { SearchBar, ItemList, AddItemModal, EditItemModal } from "./components";
+import type { Item } from "../domain";
 
 export function App() {
   const { user, logout } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
+  const [editingItem, setEditingItem] = useState<Item | null>(null);
 
   const items = useSearchItems(searchQuery);
-  const { addItem } = useItemMutations();
+  const { addItem, updateItem, removeItem } = useItemMutations();
 
   async function handleLogout() {
     try {
@@ -42,13 +44,26 @@ export function App() {
           </button>
         </div>
 
-        <ItemList items={items} />
+        <ItemList
+          items={items}
+          onEditItem={setEditingItem}
+          onDeleteItem={removeItem}
+        />
       </main>
 
       {showAddModal && (
         <AddItemModal
           onSave={addItem}
           onClose={() => setShowAddModal(false)}
+        />
+      )}
+
+      {editingItem && (
+        <EditItemModal
+          item={editingItem}
+          onSave={updateItem}
+          onDelete={removeItem}
+          onClose={() => setEditingItem(null)}
         />
       )}
     </div>

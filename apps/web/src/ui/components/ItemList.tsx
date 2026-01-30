@@ -3,9 +3,11 @@ import { ItemRow } from "./ItemRow";
 
 interface ItemListProps {
   items: Item[];
+  onEditItem: (item: Item) => void;
+  onDeleteItem: (id: string) => void;
 }
 
-export function ItemList({ items }: ItemListProps) {
+export function ItemList({ items, onEditItem, onDeleteItem }: ItemListProps) {
   if (items.length === 0) {
     return (
       <div className="item-list-empty">
@@ -17,7 +19,12 @@ export function ItemList({ items }: ItemListProps) {
   return (
     <div className="item-list">
       {items.map((item) => (
-        <ItemRow key={item.id} item={item} />
+        <ItemRow
+          key={item.id}
+          item={item}
+          onEdit={onEditItem}
+          onDelete={onDeleteItem}
+        />
       ))}
     </div>
   );
