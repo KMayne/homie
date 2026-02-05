@@ -28,7 +28,7 @@ function parseLocationPath(input: string): string[] {
     return [];
   }
   return input
-    .split(",")
+    .split("/")
     .map((segment) => segment.trim())
     .filter((segment) => segment.length > 0);
 }
@@ -132,11 +132,11 @@ export function AddItemModal({ onSave, onClose }: AddItemModalProps) {
             <input
               id="location"
               type="text"
-              placeholder="Living Room, TV Stand, Drawer"
+              placeholder="Living Room / TV Stand / Drawer"
               value={form.locationPath}
               onChange={(e) => updateField("locationPath", e.target.value)}
             />
-            <small>Comma-separated path segments</small>
+            <small>Slash-separated path segments</small>
           </div>
 
           <AttributeEditor
