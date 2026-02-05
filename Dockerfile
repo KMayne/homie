@@ -14,14 +14,20 @@ COPY packages ./packages
 # Copy server app
 COPY apps/server ./apps/server
 
+# Copy web app
+COPY apps/web ./apps/web
+
 # Install dependencies
 RUN pnpm install --frozen-lockfile
+
+# Generate Prisma client
+RUN pnpm --filter @inventory/server exec prisma generate
 
 # Set working directory to server
 WORKDIR /app/apps/server
 
-# Create data directory
-RUN mkdir -p data
+# Build frontend
+RUN pnpm --filter @inventory/web run build
 
 # Expose port
 EXPOSE 3000

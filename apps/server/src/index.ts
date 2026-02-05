@@ -1,16 +1,7 @@
 import { app } from "./app.ts";
-import { auth } from "./routes/auth.ts";
-import { inventories } from "./routes/inventories.ts";
-import { setupWebSocketSync } from "./ws/sync.ts";
-import { createRepo } from "./repo.ts";
 import { config } from "./config.ts";
-
-// Mount routes
-app.use("/auth", auth);
-app.use("/api/inventories", inventories);
-
-// Health check
-app.get("/health", (req, res) => res.json({ status: "ok" }));
+import { createRepo } from "./repo.ts";
+import { setupWebSocketSync } from "./ws/sync.ts";
 
 // Start server
 const server = app.listen(config.port, () => {

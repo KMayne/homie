@@ -1,10 +1,10 @@
-import express, { type Application, type Request, type Response, type NextFunction, type RequestHandler } from "express";
-import cors from "cors";
-import cookieParser from "cookie-parser";
-import { config } from "./config.ts";
-import { refreshSession } from "./store/index.ts";
 import type { Session, User } from "@inventory/shared";
-import { getUserById } from "./store/index.ts";
+import cookieParser from "cookie-parser";
+import cors from "cors";
+import express, { type Application } from "express";
+import { config } from "./config.ts";
+import { auth } from "./routes/auth.ts";
+import { inventories } from "./routes/inventories.ts";
 
 // Extend Express Request type with our custom properties
 declare global {
@@ -27,52 +27,14 @@ app.use(
   cors({
     origin: config.origin,
     credentials: true,
-  })
+  }),
 );
 
-// Auth middleware helper
-export const requireAuth: RequestHandler = async (req, res, next) => {
-  const sessionId = req.cookies[config.sessionCookieName];
-  if (!sessionId) {
-    res.status(401).json({ error: "Unauthorized" });
-    return;
-  }
+// Mount routes
+app.use("/api/auth", auth);
+app.use("/api/inventories", inventories);
 
-  const session = await refreshSession(sessionId);
-  if (!session) {
-    clearSessionCookie(res);
-    res.status(401).json({ error: "Session expired" });
-    return;
-  }
+// Health check
+app.get("/api/health", (_req, res) => res.json({ status: "ok" }));
 
-  const user = await getUserById(session.userId);
-  if (!user) {
-    clearSessionCookie(res);
-    res.status(401).json({ error: "User not found" });
-    return;
-  }
-
-  req.session = session;
-  req.user = user;
-
-  // Update session cookie with new expiry
-  setSessionCookie(res, session);
-
-  next();
-};
-
-export function setSessionCookie(res: Response, session: Session) {
-  res.cookie(config.sessionCookieName, session.id, {
-    httpOnly: true,
-    secure: config.origin.startsWith("https"),
-    sameSite: "lax",
-    maxAge: config.sessionMaxAge,
-    path: "/",
-  });
-}
-
-export function clearSessionCookie(res: Response) {
-  res.clearCookie(config.sessionCookieName, {
-    path: "/",
-  });
-}
+app.use("/", express.static("../web/dist"));

@@ -64,11 +64,11 @@ export interface LoginFinishResponse {
 
 export const authApi = {
   me(): Promise<MeResponse> {
-    return api("/auth/me");
+    return api("/api/auth/me");
   },
 
   registerStart(name: string): Promise<RegisterStartResponse> {
-    return api("/auth/register/start", {
+    return api("/api/auth/register/start", {
       method: "POST",
       body: { name },
     });
@@ -79,29 +79,29 @@ export const authApi = {
     name: string,
     response: unknown
   ): Promise<RegisterFinishResponse> {
-    return api("/auth/register/finish", {
+    return api("/api/auth/register/finish", {
       method: "POST",
       body: { tempId, name, response },
     });
   },
 
   loginStart(): Promise<LoginStartResponse> {
-    return api("/auth/login/start", { method: "POST" });
+    return api("/api/auth/login/start", { method: "POST" });
   },
 
   loginFinish(tempId: string, response: unknown): Promise<LoginFinishResponse> {
-    return api("/auth/login/finish", {
+    return api("/api/auth/login/finish", {
       method: "POST",
       body: { tempId, response },
     });
   },
 
   logout(): Promise<{ success: boolean }> {
-    return api("/auth/logout", { method: "POST" });
+    return api("/api/auth/logout", { method: "POST" });
   },
 
   updateMe(data: { name?: string }): Promise<{ user: UserInfo }> {
-    return api("/auth/me", {
+    return api("/api/auth/me", {
       method: "PATCH",
       body: data,
     });

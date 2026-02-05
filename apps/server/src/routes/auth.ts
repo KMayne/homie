@@ -1,35 +1,31 @@
-import { Router, type Request, type Response, type IRouter } from "express";
+import type { InventoryDoc, Session } from "@inventory/shared";
 import {
-  generateRegistrationOptions,
-  verifyRegistrationResponse,
   generateAuthenticationOptions,
+  generateRegistrationOptions,
   verifyAuthenticationResponse,
+  verifyRegistrationResponse,
 } from "@simplewebauthn/server";
 import type {
-  RegistrationResponseJSON,
   AuthenticationResponseJSON,
+  RegistrationResponseJSON,
 } from "@simplewebauthn/types";
+import { Router, type IRouter, type Request, type Response } from "express";
 import { config } from "../config.ts";
-import {
-  createUser,
-  getUserById,
-  updateUser,
-  getUserByCredentialId,
-  addCredentialToUser,
-  getCredentialById,
-  updateCredentialCounter,
-  createSession,
-  refreshSession,
-  deleteSession,
-  createInventoryAccess,
-  getInventoriesForUser,
-} from "../store/index.ts";
-import {
-  setSessionCookie,
-  clearSessionCookie,
-} from "../app.ts";
 import { getRepo } from "../repo.ts";
-import type { InventoryDoc } from "@inventory/shared";
+import {
+  addCredentialToUser,
+  createInventoryAccess,
+  createSession,
+  createUser,
+  deleteSession,
+  getCredentialById,
+  getInventoriesForUser,
+  getUserByCredentialId,
+  getUserById,
+  refreshSession,
+  updateCredentialCounter,
+  updateUser,
+} from "../store/index.ts";
 
 const auth: IRouter = Router();
 
@@ -194,7 +190,7 @@ auth.post("/login/finish", async (req: Request, res: Response) => {
     await updateCredentialCounter(
       user.id,
       credential.id,
-      verification.authenticationInfo.newCounter
+      verification.authenticationInfo.newCounter,
     );
 
     // Create session
@@ -303,5 +299,22 @@ auth.post("/logout", async (req: Request, res: Response) => {
   clearSessionCookie(res);
   res.json({ success: true });
 });
+
+
+export function setSessionCookie(res: Response, session: Session) {
+  res.cookie(config.sessionCookieName, session.id, {
+    httpOnly: true,
+    secure: config.origin.startsWith("https"),
+    sameSite: "lax",
+    maxAge: config.sessionMaxAge,
+    path: "/",
+  });
+}
+
+export function clearSessionCookie(res: Response) {
+  res.clearCookie(config.sessionCookieName, {
+    path: "/",
+  });
+}
 
 export { auth };
