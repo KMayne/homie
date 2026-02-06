@@ -7,4 +7,4 @@ export DATA_DIR="${DATA_DIR:-/data}"
 pnpm --filter @inventory/server exec prisma migrate deploy
 
 # Start the server
-exec pnpm start
+pnpm --filter @inventory/server start

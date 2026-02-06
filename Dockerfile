@@ -34,7 +34,6 @@ EXPOSE 3000
 
 # Copy startup script
 COPY run.sh ./run.sh
-RUN chmod +x ./run.sh
 
 # Environment variables
 ENV NODE_ENV=production
