@@ -1,6 +1,6 @@
 name: "Homie"
 description: "A household inventory app"
-version: "1.4.0"
+version: "1.4.1"
 slug: "homie"
 image: ghcr.io/kmayne/homie
 init: false
