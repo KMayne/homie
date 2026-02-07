@@ -18,7 +18,8 @@
       "WebFetch(domain:developers.home-assistant.io)",
       "WebFetch(domain:github.com)",
       "Bash(find:*)",
-      "Bash(git config:*)"
+      "Bash(git config:*)",
+      "Bash(pnpm typecheck:*)"
     ]
   }
 }

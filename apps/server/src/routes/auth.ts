@@ -1,12 +1,9 @@
-import type { InventoryDoc, Session } from "@inventory/shared";
+import type { Session } from "@inventory/shared";
 import { Router, type IRouter, type Request, type Response } from "express";
 import { config } from "../config.ts";
 import { hashPassword, verifyPassword } from "../password.ts";
-import { getRepo } from "../repo.ts";
 import {
-  createInventoryAccess,
   createSession,
-  createUser,
   deleteSession,
   getInventoriesForUser,
   getUserById,
@@ -14,6 +11,7 @@ import {
   refreshSession,
   updateUser,
 } from "../store/index.ts";
+import { createUserWithInventory } from "../store/users.ts";
 
 const auth: IRouter = Router();
 
@@ -26,16 +24,19 @@ auth.post("/register", async (req: Request, res: Response) => {
   };
 
   if (!username || typeof username !== "string" || username.trim().length === 0) {
+    console.warn("Registration rejected: missing username");
     res.status(400).json({ error: "Username is required" });
     return;
   }
 
   if (!name || typeof name !== "string" || name.trim().length === 0) {
+    console.warn(`Registration rejected for '${username}': missing name`);
     res.status(400).json({ error: "Name is required" });
     return;
   }
 
   if (!password || typeof password !== "string" || password.length < 8) {
+    console.warn(`Registration rejected for '${username}': password too short`);
     res.status(400).json({ error: "Password must be at least 8 characters" });
     return;
   }
@@ -44,31 +45,30 @@ auth.post("/register", async (req: Request, res: Response) => {
     // Check if username is already taken
     const existing = await getUserByUsername(username.trim());
     if (existing) {
+      console.warn(`Registration rejected: username '${username}' already taken`);
       res.status(409).json({ error: "Username already taken" });
       return;
     }
 
     const passwordHash = await hashPassword(password);
-    const user = await createUser(username.trim(), passwordHash, name.trim());
 
-    // Create default inventory
-    const repo = getRepo();
-    const handle = repo.create<InventoryDoc>();
-    handle.change((doc) => {
-      doc.items = {};
-    });
-    await createInventoryAccess(handle.documentId, user.id, "Inventory");
+    // Create user, inventory, and session atomically so a partial failure
+    // doesn't leave an orphaned user causing "Username already taken" on retry
+    const { user, inventoryId, session } = await createUserWithInventory(
+      username.trim(),
+      passwordHash,
+      name.trim(),
+    );
 
-    // Create session
-    const session = await createSession(user.id);
+    console.log(`User '${username}' registered (id: ${user.id}, inventory: ${inventoryId})`);
     setSessionCookie(req, res, session);
 
     res.json({
       user: { id: user.id, name: user.name },
-      inventoryId: handle.documentId,
+      inventoryId,
     });
   } catch (err) {
-    console.error("Registration error:", err);
+    console.error(`Registration failed for '${username}':`, err);
     res.status(500).json({ error: "Registration failed" });
   }
 });
