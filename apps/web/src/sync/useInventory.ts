@@ -6,6 +6,7 @@ import type {
   NewInventoryItem,
 } from "@inventory/shared";
 import { useInventoryId } from "./context";
+import { uuid } from "../utils/uuid";
 
 export function useInventory() {
   const inventoryId = useInventoryId();
@@ -22,10 +23,10 @@ export function useInventory() {
 
       const item: InventoryItem = {
         ...newItem,
-        id: crypto.randomUUID(),
+        id: uuid(),
         attributes: newItem.attributes.map((attr) => ({
           ...attr,
-          id: crypto.randomUUID(),
+          id: uuid(),
         })),
       };
 

@@ -1,4 +1,5 @@
 import type { AttributeType, ItemAttribute } from "../../domain";
+import { uuid } from "../../utils/uuid";
 
 interface AttributeEditorProps {
   attributes: ItemAttribute[];
@@ -8,7 +9,7 @@ interface AttributeEditorProps {
 const ATTRIBUTE_TYPES: AttributeType[] = ["text", "number", "date", "file"];
 
 function generateAttributeId(): string {
-  return crypto.randomUUID();
+  return uuid();
 }
 
 export function AttributeEditor({ attributes, onChange }: AttributeEditorProps) {

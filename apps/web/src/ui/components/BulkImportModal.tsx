@@ -2,6 +2,7 @@ import { importItemsSchema } from "@inventory/shared";
 import { useState } from "react";
 import { z } from "zod/v4";
 import type { NewItem } from "../../domain";
+import { uuid } from "../../utils/uuid";
 
 interface BulkImportModalProps {
   onImport: (items: NewItem[]) => void;
@@ -22,7 +23,7 @@ function parseItems(data: unknown): { items: NewItem[]; errors: string[] } {
         .map((p) => p.trim())
         .filter((p) => p.length > 0),
       attributes: item.attributes.map((attr) => ({
-        id: crypto.randomUUID(),
+        id: uuid(),
         key: attr.key.trim(),
         type: attr.type,
         value: attr.value,
